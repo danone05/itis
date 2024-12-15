@@ -1,5 +1,5 @@
 // Исходная строка
-let inputString = 'hellooooooooo'; // Изначально пустая строка
+let inputString = 'hellooooooooo';
 
 // Проверяем, является ли строка пустой
 if (inputString.length > 0) {
