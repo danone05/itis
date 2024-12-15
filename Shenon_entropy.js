@@ -1,48 +1,59 @@
-inputString = ''; // Входная строка
-
-alph_1 = new Array(); // Массив для уникальных символов
-alph_2 = new Array(); // Второй массив (пока не используется в логике)
-
-// Формируем массив уникальных символов
-for (let i = 0; i < inputString.length; i++) {
-  if (!(inputString[i] in alph_1)) { // Если символ еще не добавлен в alph_1
-    alph_1.push(inputString[i]); // Добавляем уникальный символ
-  }
-}
-
-console.log(alph_1); // Выводим массив уникальных символов
+// Исходная строка
+let inputString = 'hellooooooooo'; // Изначально пустая строка
 
 // Проверяем, является ли строка пустой
-if (inputString.trim().length > 0) { // Удаляем пробелы и проверяем длину строки
-  alph = new Array(); // Массив для подсчёта частот символов
+if (inputString.length > 0) {
+    // Массив для хранения уникальных символов
+    let alph_1 = new Array();
 
-  // Подсчёт количества вхождений каждого символа
-  for (let i = 0; i < inputString.length; i++) {
-    if (alph[inputString[i]] >= 0) {
-      alph[inputString[i]]++; // Увеличиваем частоту символа
-    } else {
-      alph[inputString[i]] = 1; // Инициализируем частоту символа
+    // Массив для хранения частот символов
+    let alph_2 = new Array();
+
+    // Формируем массив уникальных символов и частот
+    for (let i = 0; i < inputString.length; i++) {
+        const char = inputString[i];
+        const index = alph_1.indexOf(char); // Проверяем, есть ли символ в alph_1
+
+        if (index === -1) {
+            alph_1.push(char); // Добавляем новый уникальный символ
+            alph_2.push(1);    // Инициализируем его частоту
+        } else {
+            alph_2[index]++; // Увеличиваем частоту символа
+        }
     }
-  }
 
-  lenAlph = 0; // Количество уникальных символов
-  entropy = 0; // Энтропия Шеннона
+    // Массив для подсчёта частот символов (для энтропии)
+    let alph = new Array();
 
-  // Вычисляем вероятности символов
-  for (let i in alph) {
-    lenAlph++; // Увеличиваем счётчик уникальных символов
-    alph[i] /= inputString.length; // Преобразуем частоту в вероятность
-  }
+    // Подсчитываем частоты символов
+    for (let i = 0; i < inputString.length; i++) {
+        if (alph[inputString[i]] >= 0) {
+            alph[inputString[i]]++;
+        } else {
+            alph[inputString[i]] = 1;
+        }
+    }
 
-  // Если в строке больше одного уникального символа, считаем энтропию
-  if (lenAlph > 1) {
+    let lenAlph = 0; // Количество уникальных символов
+    let entropy = 0; // Энтропия Шеннона
+
+    // Вычисляем вероятности и энтропию
     for (let i in alph) {
-      entropy -= alph[i] * Math.log(alph[i]); // Основная формула энтропии
+        lenAlph++;
+        alph[i] /= inputString.length; // Преобразуем частоту в вероятность
     }
-    entropy /= Math.log(lenAlph); // Нормализация энтропии
-  }
 
-  console.log(entropy); // Выводим результат
+    if (lenAlph > 1) {
+        for (let i in alph) {
+            entropy -= alph[i] * Math.log(alph[i]); // Основная формула энтропии
+        }
+        entropy /= Math.log(lenAlph); // Нормализация энтропии
+    }
+
+    // Выводим результаты
+    console.log("Уникальные символы (alph_1):", alph_1); // Выводим уникальные символы
+    console.log("Частоты символов (alph_2):", alph_2);   // Выводим частоты символов
+    console.log(`Энтропия Шеннона: ${entropy}`); // Выводим энтропию
 } else {
-  console.log('False!! Строка пуста!'); // Сообщение об ошибке
+    console.log('False!! Строка пуста!'); // Сообщение об ошибке
 }
