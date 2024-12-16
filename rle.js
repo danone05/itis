@@ -1,63 +1,66 @@
-function escape_encode(input) { // функция, которая выполняет сжатие строки
-    let result = ''; // запихиваем результат сжатой строки в result
+let fs = require('fs');
+let inText = fs.readFileSync('input.txt', 'utf8');
+inText = inText.toString();
+let len = inText.length;
+fs.writeFileSync('code.txt', '');
+fs.writeFileSync('decode.txt', '');
 
-    let i = 0;
-    while (i < input.length) { // цикл перебирает каждый символ строки input
-        let count = input[i]; // currentSymbol сохраняет символ строки input
-        // подсчитываем количество одинаковых символов, которые идут друг за другом
-        let length = 1;
-        while (count == input[length + i]) {
-            length++; // переменная увеличивается, пока символы совпадают
-        }
-        // Добавляем результат в result
-        if (length <= 2) {
-            result += count.repeat(length);
-        } else {
-            result += length + count;
-        }
-        // переход к следующим символам
-        i += length;
+//Кодирование input.txt
+for(let i = 0; i < len; i++){
+    let n = 0;
+    while(inText.charAt(i) == inText.charAt(i+n)){
+        n++;
     }
-    return result;
-}
+    i += n-1;
 
-function escape_decode(input) { // функция, которая выполняет декодирование строки
-    let result = '';
-
-    let i = 0;
-    while (i < input.length) {
-        if (isDigit(input[i])) { // проверяем, является ли текущий символ цифрой
-            let num = '';
-            while (isDigit(input[i])) { // собираем все цифры, представляющие число
-                num += input[i];
-                i++;
-            }
-            let count = parseInt(num, 10); // преобразуем число из строки в целое
-            let char = input[i]; // следующий символ — это символ для повторения
-            result += char.repeat(count); // добавляем символ, повторённый нужное количество раз
-        } else {
-            result += input[i]; // если это не цифра, просто добавляем символ
+    //Кодирование строки
+    if(n > 2){
+        while(n >= 255){
+            fs.appendFileSync('code.txt', "#"+ String.fromCharCode(255) + inText.charAt(i));
+            n = n - 255;
         }
-        i++;
+		
+        fs.appendFileSync('code.txt', "#" + String.fromCharCode(n));
     }
-    return result;
+
+    //если два повтора или нет повторов
+    if(n == 2){
+        fs.appendFileSync('code.txt', inText.charAt(i));
+    }
+    fs.appendFileSync('code.txt', inText.charAt(i));
 }
 
-function isDigit(char) {
-    return char >= '0' && char <= '9'; // проверяем, является ли символ цифрой
+//Декдирование code.txt
+
+let inCodeText = fs.readFileSync('code.txt', 'utf8');
+inCodeText = inCodeText.toString();
+
+len = inCodeText.length;
+
+for(let i = 0; i < len; i++){
+    if(inCodeText.charAt(i) == '#'){
+        let repeat = inCodeText.charCodeAt(i + 1);
+        for (let j = 0; j < repeat; j++){
+            fs.appendFileSync('decode.txt', inCodeText.charAt(i + 2))
+        }
+        i += 2;
+    }
+    else{
+        fs.appendFileSync('decode.txt', inCodeText.charAt(i))
+	}
 }
 
-let fs = require('fs'); // подключили библиотеку
+let inDecodeText = fs.readFileSync('decode.txt', 'utf8');
+inDecodeText = inDecodeText.toString();
 
-var inText = fs.readFileSync('input.txt'); // считали из файла
-var a = inText.toString(); // сохранили в переменную как строку
+let Cf = fs.statSync('input.txt').size / fs.statSync('code.txt').size; //Считаем коэффициент сжатия
 
-let encode_str = escape_encode(a);
-fs.writeFileSync('output_encoded.txt', encode_str); // записываем сжатую строку в файл
+if (inDecodeText === inText) { //Проверка работы RLE и вывод коэффициента сжатия
+    console.log("RLE is working");
+	console.log("Сompression ratio : ", Cf);
+}
+else {
+    console.log("RLE is not working");
 
-console.log("Коэффициент сжатия = ", a.length / encode_str.length); // выводим степень сжатия
-
-let decode_str = escape_decode(encode_str);
-fs.writeFileSync('output_decoded.txt', decode_str); // записываем декодированную строку в файл
-
-console.log("Декодирование корректно: ", a === decode_str);
+}
+// node rle.js input.txt
