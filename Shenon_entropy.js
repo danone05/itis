@@ -47,7 +47,7 @@ if (inputString.length > 0) {
         for (let i in alph) {
             entropy -= alph[i] * Math.log(alph[i]); // Основная формула энтропии
         }
-        entropy /= Math.log(lenAlph); // Нормализация энтропии
+        entropy /= Math.log(lenAlph);
     }
 
     // Выводим результаты
