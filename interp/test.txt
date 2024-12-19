@@ -1,4 +1,0 @@
-SET 10 0
-SET 11 1
-ADD 0 1 2
-OUT 2
